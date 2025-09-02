@@ -6,7 +6,7 @@ import Detail from './components/pages/Detail'
 import Login from './components/pages/account/Login'
 import Register from './components/pages/account/Register'
 import ChangePassword from './components/pages/account/ChangePassword'
-import EnrolledCourses from './components/pages/account/EnrolledCourses'
+import MyLearning from './components/pages/account/MyLearning'
 import MyCourses from './components/pages/account/MyCourses'
 import WatchCourse from './components/pages/account/WatchCourse'
 
@@ -23,7 +23,7 @@ function App() {
           <Route path='/account/login' element={<Login />} />
           <Route path='/account/register' element={<Register />} />
           <Route path='/account/change-password' element={<ChangePassword />} />
-          <Route path='/account/enrolled-courses' element={<EnrolledCourses />} />
+          <Route path='/account/enrolled-courses' element={<MyLearning />} />
           <Route path='/account/my-courses' element={<MyCourses />} />
           <Route path='/account/watch-course' element={<WatchCourse />} />
         </Routes>
