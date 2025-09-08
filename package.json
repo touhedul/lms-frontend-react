@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
+    "axios": "^1.11.0",
     "bootstrap": "^5.3.8",
     "filepond": "^4.32.8",
     "filepond-plugin-file-validate-type": "^1.2.9",

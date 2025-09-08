@@ -9,6 +9,7 @@ import ChangePassword from './components/pages/account/ChangePassword'
 import MyLearning from './components/pages/account/MyLearning'
 import MyCourses from './components/pages/account/MyCourses'
 import WatchCourse from './components/pages/account/WatchCourse'
+import { Toaster } from 'react-hot-toast'
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Route path='/account/watch-course' element={<WatchCourse />} />
         </Routes>
       </BrowserRouter>
+      <Toaster/>
     </>
   )
 }
