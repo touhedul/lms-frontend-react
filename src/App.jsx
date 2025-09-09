@@ -10,6 +10,7 @@ import MyLearning from './components/pages/account/MyLearning'
 import MyCourses from './components/pages/account/MyCourses'
 import WatchCourse from './components/pages/account/WatchCourse'
 import { Toaster } from 'react-hot-toast'
+import Dashboard from './components/pages/account/Dashboard'
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <Route path='/detail' element={<Detail />} />
           <Route path='/account/login' element={<Login />} />
           <Route path='/account/register' element={<Register />} />
+          <Route path='/account/dashboard' element={<Dashboard />} />
           <Route path='/account/change-password' element={<ChangePassword />} />
           <Route path='/account/enrolled-courses' element={<MyLearning />} />
           <Route path='/account/my-courses' element={<MyCourses />} />
