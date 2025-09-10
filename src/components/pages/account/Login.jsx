@@ -1,15 +1,17 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Layout from '../../common/Layout'
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { apiUrl } from '../../common/Config';
 import toast from 'react-hot-toast';
+import { AuthContext } from '../../context/AuthContext';
 
 const Login = () => {
     const { register, handleSubmit, formState: { errors }, setError } = useForm();
+    const {login} = useContext(AuthContext);
     const navigate = useNavigate();
-    const login = (data) => {
+    const loginSubmit = (data) => {
         axios.post(`${apiUrl}/login`, data)
         .then(response => {
             const userInfo = {
@@ -20,6 +22,7 @@ const Login = () => {
             };
             localStorage.setItem('userInfo', JSON.stringify(userInfo));
             toast.success("Login successful");
+            login(userInfo);
             navigate('/account/dashboard');
 
         })
@@ -36,7 +39,7 @@ const Login = () => {
             <Layout>
                 <div className='container py-5 mt-5'>
                     <div className='d-flex align-items-center justify-content-center'>
-                        <form onSubmit={handleSubmit(login)}>
+                        <form onSubmit={handleSubmit(loginSubmit)}>
                             <div className='card border-0 shadow login'>
                                 <div className='card-body p-4'>
                                     <h3 className='border-bottom pb-3 mb-3'>Login</h3>
