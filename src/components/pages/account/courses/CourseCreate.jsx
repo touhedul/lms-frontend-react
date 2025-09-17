@@ -1,20 +1,24 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Layout from '../../../common/Layout'
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import UserSidebar from '../../../common/UserSidebar';
 
 import axiosInstance from '../../../../api/axios';
 import toast from 'react-hot-toast';
+import { useState } from 'react';
 
 const CourseCreate = () => {
     const { register, handleSubmit, formState: { errors }, setError,reset } = useForm();
+    const navigate = useNavigate();
+   
+   
 
     const courseCreate = (data) => {
         axiosInstance.post('/courses', data)
             .then(response => {
                 toast.success("Course Created Successfully");
-                reset();
+                navigate('/account/course/edit/'+response.data.id);
             })
             .catch(error => {
                 console.log(error);
@@ -24,6 +28,8 @@ const CourseCreate = () => {
                 })
             })
     }
+
+    
     return (
         <Layout>
 
@@ -32,13 +38,13 @@ const CourseCreate = () => {
                     <nav aria-label="breadcrumb">
                         <ol className="breadcrumb">
                             <li className="breadcrumb-item"><Link to="/account">Account</Link></li>
-                            <li className="breadcrumb-item active" aria-current="page">Course</li>
+                            <li className="breadcrumb-item active" aria-current="page">Create Course</li>
                         </ol>
                     </nav>
                     <div className='row'>
                         <div className='col-md-12 mt-5 mb-3'>
                             <div className='d-flex justify-content-between'>
-                                <h2 className='h4 mb-0 pb-0'>Course</h2>
+                                <h2 className='h4 mb-0 pb-0'>Create Course</h2>
                             </div>
                         </div>
                         <div className='col-lg-3 account-sidebar'>
