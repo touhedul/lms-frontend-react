@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Layout from '../../../common/Layout'
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import UserSidebar from '../../../common/UserSidebar';
 
 import axiosInstance from '../../../../api/axios';
@@ -10,11 +10,12 @@ import toast from 'react-hot-toast';
 const CourseEdit = () => {
     const { register, handleSubmit, formState: { errors }, setError, reset } = useForm();
     const navigate = useNavigate();
-     const [categories, setCategories] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [levels, setLevels] = useState([]);
     const [languages, setLanguages] = useState([]);
+    const params = useParams();
 
-     const getMetadata = () => {
+    const getMetadata = () => {
         axiosInstance.get('/course-metadata')
             .then(response => {
                 setCategories(response.data.categories);
@@ -25,16 +26,35 @@ const CourseEdit = () => {
                 console.log(error);
             })
     }
-    useEffect(()=>{
-            getMetadata();
-        },[])
+
+    const getCourse = () => {
+        axiosInstance.get('/courses/'+params.id) // Change 1 to dynamic course ID when needed
+            .then(response => {
+                const course = response.data;
+                reset({
+                    title: course.title,
+                    category_id: course.category_id,
+                    level_id: course.level_id,
+                    language_id: course.language_id,
+                    description: course.description,
+                    price: course.price,
+                    cross_price: course.cross_price,
+                });
+            })
+            .catch(error => {
+                console.log(error);
+            })
+    }
+    useEffect(() => {
+        getCourse();
+        getMetadata();
+    }, [])
 
     const courseEdit = (data) => {
-        axiosInstance.post('/courses', data)
+        axiosInstance.put('/courses/'+params.id, data)
             .then(response => {
-                toast.success("Course Created Successfully");
-                reset();
-                navigate('/account/course/edit/' + response.data.id);
+                toast.success("Course Updated Successfully");
+                
             })
             .catch(error => {
                 console.log(error);
@@ -83,14 +103,17 @@ const CourseEdit = () => {
                                                             type="text"
                                                             className="form-control"
                                                             placeholder="Title"
-                                                            {...register("title")}
+                                                            {...register("title", { required: "This field is required" })}
                                                         />
+                                                        {errors.title && (
+                                                            <small className="text-danger">{errors.title.message}</small>
+                                                        )}
                                                     </div>
 
                                                     {/* Category */}
                                                     <div className="mb-3">
                                                         <label className="form-label">Category</label>
-                                                        <select className="form-select" {...register("category")}>
+                                                        <select className="form-select" {...register("category_id", { required: "This field is required" })}>
                                                             <option value="">Select a Category</option>
                                                             {
                                                                 categories && categories.map((category) => (
@@ -98,12 +121,15 @@ const CourseEdit = () => {
                                                                 ))
                                                             }
                                                         </select>
+                                                        {errors.category && (
+                                                            <small className="text-danger">{errors.category.message}</small>
+                                                        )}
                                                     </div>
 
                                                     {/* Level */}
                                                     <div className="mb-3">
                                                         <label className="form-label">Level</label>
-                                                        <select className="form-select" {...register("level")}>
+                                                        <select className="form-select" {...register("level_id", { required: "This field is required" })}>
                                                             <option value="">Select a Level</option>
                                                             {
                                                                 levels && levels.map((level) => (
@@ -111,12 +137,15 @@ const CourseEdit = () => {
                                                                 ))
                                                             }
                                                         </select>
+                                                        {errors.level && (
+                                                            <small className="text-danger">{errors.level.message}</small>
+                                                        )}
                                                     </div>
 
                                                     {/* Language */}
                                                     <div className="mb-3">
                                                         <label className="form-label">Language</label>
-                                                        <select className="form-select" {...register("language")}>
+                                                        <select className="form-select" {...register("language_id", { required: "This field is required" })}>
                                                             <option value="">Select a Language</option>
                                                             {
                                                                 languages && languages.map((language) => (
@@ -124,6 +153,9 @@ const CourseEdit = () => {
                                                                 ))
                                                             }
                                                         </select>
+                                                        {errors.language && (
+                                                            <small className="text-danger">{errors.language.message}</small>
+                                                        )}
                                                     </div>
 
                                                     {/* Description */}
@@ -135,6 +167,9 @@ const CourseEdit = () => {
                                                             placeholder="Description"
                                                             {...register("description")}
                                                         ></textarea>
+                                                        {errors.description && (
+                                                            <small className="text-danger">{errors.description.message}</small>
+                                                        )}
                                                     </div>
 
                                                     {/* Pricing Section */}
@@ -145,8 +180,11 @@ const CourseEdit = () => {
                                                             type="number"
                                                             className="form-control"
                                                             placeholder="Sell Price"
-                                                            {...register("sell_price")}
+                                                            {...register("price", { required: "This field is required" })}
                                                         />
+                                                        {errors.price && (
+                                                            <small className="text-danger">{errors.price.message}</small>
+                                                        )}
                                                     </div>
 
                                                     <div className="mb-4">
@@ -157,6 +195,9 @@ const CourseEdit = () => {
                                                             placeholder="Cross Price"
                                                             {...register("cross_price")}
                                                         />
+                                                        {errors.cross_price && (
+                                                            <small className="text-danger">{errors.cross_price.message}</small>
+                                                        )}
                                                     </div>
 
                                                     {/* Submit Button */}
