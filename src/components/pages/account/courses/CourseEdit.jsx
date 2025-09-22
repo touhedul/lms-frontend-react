@@ -6,10 +6,12 @@ import UserSidebar from '../../../common/UserSidebar';
 
 import axiosInstance from '../../../../api/axios';
 import toast from 'react-hot-toast';
+import ManageOutcome from './ManageOutcome';
 
 const CourseEdit = () => {
     const { register, handleSubmit, formState: { errors }, setError, reset } = useForm();
     const navigate = useNavigate();
+    const [loading,setLoading] = useState(false);
     const [categories, setCategories] = useState([]);
     const [levels, setLevels] = useState([]);
     const [languages, setLanguages] = useState([]);
@@ -51,6 +53,7 @@ const CourseEdit = () => {
     }, [])
 
     const courseEdit = (data) => {
+        setLoading(true);
         axiosInstance.put('/courses/'+params.id, data)
             .then(response => {
                 toast.success("Course Updated Successfully");
@@ -62,6 +65,9 @@ const CourseEdit = () => {
                 Object.keys(errors).forEach(key => {
                     setError(key, { message: errors[key][0] })
                 })
+            })
+            .finally(() => {
+                setLoading(false);
             })
     }
     return (
@@ -201,8 +207,11 @@ const CourseEdit = () => {
                                                     </div>
 
                                                     {/* Submit Button */}
-                                                    <button type="submit" className="btn btn-success w-100">
-                                                        Update
+                                                    <button disabled={loading} type="submit" className="btn btn-success w-100">
+
+                                                        {
+                                                            loading == true ? 'Updating...' : 'Update'
+                                                        }
                                                     </button>
                                                 </form>
                                             </div>
@@ -211,6 +220,7 @@ const CourseEdit = () => {
                                     </div>
                                     <div className='col-md-5'>
 
+                                          <ManageOutcome />
                                     </div>
                                 </div>
                             </div>
