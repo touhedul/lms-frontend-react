@@ -7,6 +7,7 @@ import UserSidebar from '../../../common/UserSidebar';
 import axiosInstance from '../../../../api/axios';
 import toast from 'react-hot-toast';
 import ManageOutcome from './ManageOutcome';
+import ManageRequirement from './ManageRequirement';
 
 const CourseEdit = () => {
     const { register, handleSubmit, formState: { errors }, setError, reset } = useForm();
@@ -221,6 +222,8 @@ const CourseEdit = () => {
                                     <div className='col-md-5'>
 
                                           <ManageOutcome />
+                                          <br />
+                                          <ManageRequirement />
                                     </div>
                                 </div>
                             </div>
