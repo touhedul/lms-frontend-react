@@ -7,6 +7,7 @@ import { MdDragIndicator } from 'react-icons/md';
 import { BsPencilSquare } from 'react-icons/bs';
 import { FaTrashAlt } from 'react-icons/fa';
 import UpdateRequirementModal from './UpdateRequirementModal';
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 const ManageRequirement = () => {
 
@@ -23,7 +24,27 @@ const ManageRequirement = () => {
         setRequirementData(requirement);
         setShow(true);
     }
-        
+
+    const handleDragEnd = (result) => {
+        if (!result.destination) return;
+
+        const reorderedItems = Array.from(requirements);
+        const [movedItem] = reorderedItems.splice(result.source.index, 1);
+        reorderedItems.splice(result.destination.index, 0, movedItem);
+
+        setRequirements(reorderedItems);
+        saveOrder(reorderedItems);
+    };
+
+    const saveOrder = (sortedRequirements) => {
+        axiosInstance.post('/requirement-order', { 'requirements': sortedRequirements })
+            .then(response => {
+            })
+            .catch(error => {
+                console.log(error);
+            })
+
+    }
 
     const params = useParams();
 
@@ -52,7 +73,7 @@ const ManageRequirement = () => {
     }
 
     const deleteRequirement = (id) => {
-        axiosInstance.delete('/requirements/'+id)
+        axiosInstance.delete('/requirements/' + id)
             .then(response => {
                 toast.success('Requirement deleted successfully');
                 const newRequirements = requirements.filter(requirement => requirement.id !== id);
@@ -108,27 +129,49 @@ const ManageRequirement = () => {
                     </form>
 
                     <hr />
-                    {requirements && requirements.map((requirement) => (
-                        <div className='card shadow mb-2' key={requirement.id}>
-                            <div className='card-body p-2 d-flex'>
-                                <div><MdDragIndicator /></div>
-                                <div className='d-flex justify-content-between w-100'>
-                                    <div className='ps-2'>
-                                        {requirement.text}
-                                    </div>
-                                    <div className='d-flex'>
-                                        <Link onClick={()=>handleShow(requirement)} className='text-primary me-1'>
-                                            <BsPencilSquare />
-                                        </Link>
-                                        <Link onClick={()=>deleteRequirement(requirement.id)} className='text-danger'>
-                                            <FaTrashAlt />
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                    ))}
+                    <DragDropContext onDragEnd={handleDragEnd} >
+                        <Droppable droppableId="list">
+                            {(provided) => (
+                                <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
+                                    {
+                                        requirements.map((requirement, index) => (
+                                            <Draggable key={requirement.id} draggableId={`${requirement.id}`} index={index}>
+
+                                                {(provided) => (
+                                                    <div
+                                                        ref={provided.innerRef}
+                                                        {...provided.draggableProps}
+                                                        {...provided.dragHandleProps}
+                                                        className="mt-2 border px-3 py-2 bg-white shadow-lg  rounded"
+                                                    >
+
+                                                        <div className='card-body p-2 d-flex'>
+                                                            <div><MdDragIndicator /></div>
+                                                            <div className='d-flex justify-content-between w-100'>
+                                                                <div className='ps-2'>
+                                                                    {requirement.text}
+                                                                </div>
+                                                                <div className='d-flex'>
+                                                                    <Link onClick={() => handleShow(requirement)} className='text-primary me-1'>
+                                                                        <BsPencilSquare />
+                                                                    </Link>
+                                                                    <Link onClick={() => deleteRequirement(requirement.id)} className='text-danger'>
+                                                                        <FaTrashAlt />
+                                                                    </Link>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                )}
+                                            </Draggable>
+                                        ))}
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
                 </div>
             </div>
             <UpdateRequirementModal show={show} handleClose={handleClose} requirementData={requirementData} requirements={requirements} setRequirements={setRequirements} />
