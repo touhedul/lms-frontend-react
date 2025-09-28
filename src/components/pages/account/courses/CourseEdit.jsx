@@ -8,6 +8,7 @@ import axiosInstance from '../../../../api/axios';
 import toast from 'react-hot-toast';
 import ManageOutcome from './ManageOutcome';
 import ManageRequirement from './ManageRequirement';
+import CoverImage from './CoverImage';
 
 const CourseEdit = () => {
     const { register, handleSubmit, formState: { errors }, setError, reset } = useForm();
@@ -17,6 +18,7 @@ const CourseEdit = () => {
     const [levels, setLevels] = useState([]);
     const [languages, setLanguages] = useState([]);
     const params = useParams();
+    const [course, setCourse] = useState({});
 
     const getMetadata = () => {
         axiosInstance.get('/course-metadata')
@@ -43,6 +45,7 @@ const CourseEdit = () => {
                     price: course.price,
                     cross_price: course.cross_price,
                 });
+                setCourse(course);
             })
             .catch(error => {
                 console.log(error);
@@ -224,6 +227,8 @@ const CourseEdit = () => {
                                           <ManageOutcome />
                                           <br />
                                           <ManageRequirement />
+                                          <br />
+                                          <CoverImage course={course} setCourse={setCourse}/>
                                     </div>
                                 </div>
                             </div>
