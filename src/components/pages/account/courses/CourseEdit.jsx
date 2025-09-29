@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import ManageOutcome from './ManageOutcome';
 import ManageRequirement from './ManageRequirement';
 import CoverImage from './CoverImage';
+import ManageChapter from './ManageChapter';
 
 const CourseEdit = () => {
     const { register, handleSubmit, formState: { errors }, setError, reset } = useForm();
@@ -221,6 +222,8 @@ const CourseEdit = () => {
                                             </div>
                                         </div>
 
+                                        <br />
+                                        <ManageChapter />
                                     </div>
                                     <div className='col-md-5'>
 
