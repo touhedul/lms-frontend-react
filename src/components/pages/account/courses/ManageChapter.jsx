@@ -1,12 +1,42 @@
-import React, { useState } from 'react'
+import React, { useEffect, useReducer, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import axiosInstance from '../../../../api/axios';
 import toast from 'react-hot-toast';
+import Accordion from 'react-bootstrap/Accordion';
 
-const ManageChapter = () => {
+
+const ManageChapter = ({ course }) => {
     const [loading, setLoading] = useState(false);
     const { register, handleSubmit, formState: { errors }, reset, setError } = useForm();
+
+    const chapterReducer = (state, action) => {
+        switch (action.type) {
+            case 'SET_CHAPTERS':
+                return action.payload;
+            case 'ADD_CHAPTER':
+                return [...state, action.payload];
+
+            case 'UPDATE_CHAPTER':
+                return state.map(chapter => {
+                    if (chapter.id == action.payload.id) {
+                        return action.payload;
+                    }
+                    return chapter;
+                })
+            case 'DELETE_CHAPTER':
+                return state.filter(chapter => chapter.id !== action.payload);
+            default:
+                return state;
+        }
+    }
+    const [chapters, setChapters] = useReducer(chapterReducer, []);
+
+    useEffect(() => {
+        if (course.chapters) {
+            setChapters({ type: 'SET_CHAPTERS', payload: course.chapters });
+        }
+    }, [course])
 
     const params = useParams();
 
@@ -17,6 +47,7 @@ const ManageChapter = () => {
             .then(response => {
                 toast.success('Chapter added successfully');
                 reset();
+                setChapters({type: 'ADD_CHAPTER', payload: response.data });
             })
             .catch(error => {
                 console.log(error);
@@ -29,8 +60,8 @@ const ManageChapter = () => {
                 setLoading(false);
             })
     }
-  return (
-    <>
+    return (
+        <>
             <div className="card">
                 <div className="card-header">
                     <h5 className="card-title mb-0">Chapters</h5>
@@ -56,10 +87,26 @@ const ManageChapter = () => {
                     </form>
 
                     <hr />
+
+
+                    <Accordion>
+                        {
+                            chapters.map((chapter, index) => {
+                                return (
+                                    <Accordion.Item eventKey={index}>
+                                        <Accordion.Header>{chapter.title}</Accordion.Header>
+                                        <Accordion.Body>
+                                        </Accordion.Body>
+                                    </Accordion.Item>
+                                );
+                            }
+                            )
+                        }
+                    </Accordion>
                 </div>
             </div>
         </>
-  )
+    )
 }
 
 export default ManageChapter

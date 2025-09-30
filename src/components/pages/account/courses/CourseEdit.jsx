@@ -223,7 +223,7 @@ const CourseEdit = () => {
                                         </div>
 
                                         <br />
-                                        <ManageChapter />
+                                        <ManageChapter course={course} />
                                     </div>
                                     <div className='col-md-5'>
 
