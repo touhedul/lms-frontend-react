@@ -4,11 +4,26 @@ import { useParams } from 'react-router-dom';
 import axiosInstance from '../../../../api/axios';
 import toast from 'react-hot-toast';
 import Accordion from 'react-bootstrap/Accordion';
+import UpdateChapterModal from './UpdateChapterModal';
 
 
 const ManageChapter = ({ course }) => {
     const [loading, setLoading] = useState(false);
     const { register, handleSubmit, formState: { errors }, reset, setError } = useForm();
+
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+
+    const [chapterData, setChapterData] = useState(null);
+    
+    // const [chapters, setChapters] = useState([]);
+
+    const handleShow = (chapter) => {
+        
+        setChapterData(chapter);
+        setShow(true);
+    }
 
     const chapterReducer = (state, action) => {
         switch (action.type) {
@@ -47,7 +62,7 @@ const ManageChapter = ({ course }) => {
             .then(response => {
                 toast.success('Chapter added successfully');
                 reset();
-                setChapters({type: 'ADD_CHAPTER', payload: response.data });
+                setChapters({ type: 'ADD_CHAPTER', payload: response.data });
             })
             .catch(error => {
                 console.log(error);
@@ -58,6 +73,20 @@ const ManageChapter = ({ course }) => {
             })
             .finally(() => {
                 setLoading(false);
+            })
+    }
+
+    const deleteChapter = (id) => {
+        if(!confirm('Are you sure you want to delete this chapter?')){
+            return;
+        }
+        axiosInstance.delete('/chapters/' + id)
+            .then(response => {
+                toast.success('Chapter deleted successfully');
+                setChapters({ type: 'DELETE_CHAPTER', payload: id });
+            })
+            .catch(error => {
+                console.log(error);
             })
     }
     return (
@@ -96,6 +125,8 @@ const ManageChapter = ({ course }) => {
                                     <Accordion.Item eventKey={index}>
                                         <Accordion.Header>{chapter.title}</Accordion.Header>
                                         <Accordion.Body>
+                                            <button className='btn btn-warning btn-sm' onClick={() => handleShow(chapter)}>Update</button>
+                                            <button className='btn btn-danger ms-2 btn-sm' onClick={()=>deleteChapter(chapter.id)}>Delete</button>
                                         </Accordion.Body>
                                     </Accordion.Item>
                                 );
@@ -105,6 +136,8 @@ const ManageChapter = ({ course }) => {
                     </Accordion>
                 </div>
             </div>
+
+            <UpdateChapterModal show={show} handleClose={handleClose} chapterData={chapterData} chapters={chapters} setChapters={setChapters} />
         </>
     )
 }
