@@ -5,6 +5,7 @@ import axiosInstance from '../../../../api/axios';
 import toast from 'react-hot-toast';
 import Accordion from 'react-bootstrap/Accordion';
 import UpdateChapterModal from './UpdateChapterModal';
+import AddLessonModal from './AddLessonModal';
 
 
 const ManageChapter = ({ course }) => {
@@ -13,11 +14,19 @@ const ManageChapter = ({ course }) => {
 
     const [show, setShow] = useState(false);
 
+    const [showLessonAddModal, setShowLessonAddModal] = useState(false);
+
     const handleClose = () => setShow(false);
+    const handleCloseLessonAddModal = () => setShowLessonAddModal(false);
 
     const [chapterData, setChapterData] = useState(null);
     
     // const [chapters, setChapters] = useState([]);
+
+    const handleShowLessonAddModal = (chapter) => {
+        
+        setShowLessonAddModal(true);
+    }
 
     const handleShow = (chapter) => {
         
@@ -92,8 +101,9 @@ const ManageChapter = ({ course }) => {
     return (
         <>
             <div className="card">
-                <div className="card-header">
+                <div className="card-header d-flex justify-content-between align-items-center">
                     <h5 className="card-title mb-0">Chapters</h5>
+                    <a className='btn btn-sm btn-primary' onClick={() => handleShowLessonAddModal(null)}>Add Lesson</a>
                 </div>
                 <div className="card-body">
                     <form onSubmit={handleSubmit(addChapter)}>
@@ -138,6 +148,9 @@ const ManageChapter = ({ course }) => {
             </div>
 
             <UpdateChapterModal show={show} handleClose={handleClose} chapterData={chapterData} chapters={chapters} setChapters={setChapters} />
+            
+            <AddLessonModal showLessonAddModal={showLessonAddModal} handleCloseLessonAddModal={handleCloseLessonAddModal} chapters={chapters}  />
+
         </>
     )
 }
