@@ -14,6 +14,7 @@ import Dashboard from './components/pages/account/Dashboard'
 import { RequireAuth } from './components/common/RequireAuth'
 import CourseCreate from './components/pages/account/courses/CourseCreate'
 import CourseEdit from './components/pages/account/courses/CourseEdit'
+import EditLesson from './components/pages/account/courses/EditLesson'
 
 
 function App() {
@@ -42,6 +43,11 @@ function App() {
           <Route path='/account/course/edit/:id' element={
             <RequireAuth>
               <CourseEdit />
+            </RequireAuth>
+            } />
+          <Route path='/account/course/edit/:id/lesson/edit/:lessonId' element={
+            <RequireAuth>
+              <EditLesson />
             </RequireAuth>
             } />
 
