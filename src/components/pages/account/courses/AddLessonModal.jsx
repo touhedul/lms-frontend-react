@@ -29,26 +29,6 @@ const AddLessonModal = ({ showLessonAddModal,handleCloseLessonAddModal,chapters}
             })
     }
 
-    // const updateChapter = (data) => {
-    //     setLoading(true);
-    //     axiosInstance.put('/chapters/' + chapterData.id, data)
-    //         .then(response => {
-    //             toast.success('Chapter updated successfully');
-                
-    //             setChapters({ type: 'UPDATE_CHAPTER', payload: response.data });
-    //         })
-    //         .catch(error => {
-    //             console.log(error);
-    //             const errors = error.response?.data?.errors;
-    //             Object.keys(errors).forEach(key => {
-    //                 setError(key, { message: errors[key][0] })
-    //             })
-    //         })
-    //         .finally(() => {
-    //             handleClose();
-    //             setLoading(false);
-    //         })
-    // }
 
     return (
         <>

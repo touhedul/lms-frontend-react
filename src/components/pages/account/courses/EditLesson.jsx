@@ -1,21 +1,89 @@
-import React from 'react'
+import React, { use, useEffect, useRef, useMemo, useState } from 'react'
 import UserSidebar from '../../../common/UserSidebar'
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import Layout from '../../../common/Layout';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import axiosInstance from '../../../../api/axios';
+import JoditEditor from 'jodit-react';
+import toast from 'react-hot-toast';
 
-const EditLesson = () => {
+const EditLesson = ({ placeholder }) => {
+
+    const params = useParams();
+    const [course, setCourse] = useState(null);
+    const [lesson, setLesson] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [checked, setChecked] = useState(false);
+
+    const editor = useRef(null);
+    const [content, setContent] = useState('');
+
+    const config = useMemo(() => ({
+        readonly: false, // all options from https://xdsoft.net/jodit/docs/,
+        placeholder: placeholder || ''
+    }),
+        [placeholder]
+    );
+
+
+    const fetchCourse = () => {
+        axiosInstance.get(`/courses/${params.courseId}`)
+            .then(response => {
+                setCourse(response.data);
+            })
+            .catch(error => {
+                console.log(error);
+            })
+    }
+    const fetchLesson = () => {
+        axiosInstance.get(`/lessons/${params.lessonId}`)
+            .then(response => {
+                setLesson(response.data);
+                setChecked(response.data.is_free_preview);
+                setContent(response.data.description);
+                reset({
+                    title: response.data.title,
+                    chapter_id: response.data.chapter_id,
+                    duration: response.data.duration,
+                    status: response.data.status,
+                });
+            })
+            .catch(error => {
+                console.log(error);
+            })
+    }
 
     const {
         register,
         handleSubmit,
         formState: { errors },
+        reset,
     } = useForm();
 
     const onSubmit = (data) => {
-        console.log(data);
-        alert("Form submitted! Check console for data.");
+        data.description = content;
+        data.is_free_preview = checked;
+        setLoading(true);
+        axiosInstance.put(`/lessons/${params.lessonId}`, data)
+            .then(response => {
+                toast.success('Lesson updated successfully');
+            })
+            .catch(error => {
+                console.log(error);
+                const errors = error.response?.data?.errors;
+                Object.keys(errors).forEach(key => {
+                    setError(key, { message: errors[key][0] })
+                })
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     };
+
+    useEffect(() => {
+        fetchLesson();
+        fetchCourse();
+    }, [])
     return (
         <Layout>
 
@@ -67,15 +135,17 @@ const EditLesson = () => {
                                                         <label className="form-label">Chapter</label>
                                                         <select
                                                             className="form-select"
-                                                            {...register("chapter", { required: "Chapter is required" })}
+                                                            {...register("chapter_id", { required: "Chapter is required" })}
                                                         >
                                                             <option value="">Select Chapter</option>
-                                                            <option value="module1">Module 1: Getting Started with Web Development</option>
-                                                            <option value="module2">Module 2: HTML & CSS Basics</option>
-                                                            <option value="module3">Module 3: JavaScript Introduction</option>
+                                                            {
+                                                                course && course.chapters && course.chapters.map(chapter => (
+                                                                    <option value={chapter.id} key={chapter.id}>{chapter.title}</option>
+                                                                ))
+                                                            }
                                                         </select>
-                                                        {errors.chapter && (
-                                                            <div className="text-danger">{errors.chapter.message}</div>
+                                                        {errors.chapter_id && (
+                                                            <div className="text-danger">{errors.chapter_id.message}</div>
                                                         )}
                                                     </div>
 
@@ -99,14 +169,15 @@ const EditLesson = () => {
                                                     {/* Description */}
                                                     <div className="mb-3">
                                                         <label className="form-label">Description</label>
-                                                        <textarea
-                                                            className={`form-control ${errors.description ? "is-invalid" : ""}`}
-                                                            rows="4"
-                                                            {...register("description", {
-                                                                required: "Description is required",
-                                                            })}
-                                                            placeholder="Enter course description"
-                                                        ></textarea>
+
+                                                        <JoditEditor
+                                                            ref={editor}
+                                                            value={content}
+                                                            config={config}
+                                                            tabIndex={1} // tabIndex of textarea
+                                                            onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
+                                                            onChange={newContent => { }}
+                                                        />
                                                         {errors.description && (
                                                             <div className="invalid-feedback">{errors.description.message}</div>
                                                         )}
@@ -119,18 +190,33 @@ const EditLesson = () => {
                                                             className="form-select"
                                                             {...register("status", { required: "Status is required" })}
                                                         >
-                                                            <option value="active">Active</option>
-                                                            <option value="inactive">Inactive</option>
-                                                            <option value="draft">Draft</option>
+                                                            <option value="1">Active</option>
+                                                            <option value="0">Inactive</option>
                                                         </select>
                                                         {errors.status && (
                                                             <div className="text-danger">{errors.status.message}</div>
                                                         )}
                                                     </div>
 
+
+                                                    {/* Free Lesson */}
+                                                    <div className="mb-3">
+                                                        <label className="form-label">Free Lesson</label>
+                                                        <input
+                                                            checked={checked}
+                                                            onChange={(e) => setChecked(e.target.checked)}
+                                                            type="checkbox" className='form-check-input ms-2'
+                                                        />
+                                                        {errors.is_free_preview && (
+                                                            <div className="invalid-feedback">{errors.is_free_preview.message}</div>
+                                                        )}
+                                                    </div>
+
                                                     {/* Submit Button */}
-                                                    <button type="submit" className="btn btn-primary">
-                                                        Save
+                                                    <button disabled={loading} type="submit" className="btn btn-primary">
+                                                        {
+                                                            loading ? 'Saving...' : 'Save'
+                                                        }
                                                     </button>
                                                 </form>
                                             </div>

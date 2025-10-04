@@ -45,7 +45,7 @@ function App() {
               <CourseEdit />
             </RequireAuth>
             } />
-          <Route path='/account/course/edit/:id/lesson/edit/:lessonId' element={
+          <Route path='/account/course/edit/:courseId/lesson/edit/:lessonId' element={
             <RequireAuth>
               <EditLesson />
             </RequireAuth>
