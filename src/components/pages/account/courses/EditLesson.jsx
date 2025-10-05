@@ -6,6 +6,7 @@ import { Link, useParams } from 'react-router-dom';
 import axiosInstance from '../../../../api/axios';
 import JoditEditor from 'jodit-react';
 import toast from 'react-hot-toast';
+import LessonVideo from './LessonVideo';
 
 const EditLesson = ({ placeholder }) => {
 
@@ -223,6 +224,9 @@ const EditLesson = ({ placeholder }) => {
                                         </div>
 
                                         <br />
+                                    </div>
+                                    <div className='col-md-5'>
+                                        <LessonVideo lesson={lesson} setLesson={setLesson} />
                                     </div>
                                 </div>
                             </div>
