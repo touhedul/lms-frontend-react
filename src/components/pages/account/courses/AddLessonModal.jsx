@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import axiosInstance from '../../../../api/axios';
 import toast from 'react-hot-toast';
 
-const AddLessonModal = ({ showLessonAddModal,handleCloseLessonAddModal,chapters}) => {
+const AddLessonModal = ({ addLessonToChapter,showLessonAddModal,handleCloseLessonAddModal,chapters}) => {
 
     const { register, handleSubmit, formState: { errors }, setError, reset } = useForm();
 
@@ -18,6 +18,8 @@ const AddLessonModal = ({ showLessonAddModal,handleCloseLessonAddModal,chapters}
         axiosInstance.post('/lessons', data)
             .then(response => {
                 toast.success('Lesson added successfully');
+                console.log('Lesson added:', response.data);
+                addLessonToChapter(response.data);
                 reset();
             })
             .catch(error => {

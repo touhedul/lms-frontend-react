@@ -52,6 +52,11 @@ const ManageChapter = ({ course }) => {
                 })
             case 'DELETE_CHAPTER':
                 return state.filter(chapter => chapter.id !== action.payload);
+            case 'DELETE_LESSON':
+                return state.map(chapter => ({
+                    ...chapter,
+                    lessons: chapter.lessons?.filter(lesson => lesson.id !== action.payload) || []
+                }));
             default:
                 return state;
         }
@@ -87,6 +92,20 @@ const ManageChapter = ({ course }) => {
             })
     }
 
+    const addLessonToChapter = (lesson) => {
+        setChapters({
+            type: 'UPDATE_CHAPTER',
+            payload: {
+                ...chapters.find(c => c.id === lesson.chapter_id),
+                lessons: [
+                    ...(chapters.find(c => c.id === lesson.chapter_id)?.lessons || []),
+                    lesson
+                ]
+            }
+        });
+    };
+
+
     const deleteChapter = (id) => {
         if (!confirm('Are you sure you want to delete this chapter?')) {
             return;
@@ -95,6 +114,20 @@ const ManageChapter = ({ course }) => {
             .then(response => {
                 toast.success('Chapter deleted successfully');
                 setChapters({ type: 'DELETE_CHAPTER', payload: id });
+            })
+            .catch(error => {
+                console.log(error);
+            })
+    }
+
+    const deleteLesson = (id) => {
+        if (!confirm('Are you sure you want to delete this lesson?')) {
+            return;
+        }
+        axiosInstance.delete('/lessons/' + id)
+            .then(response => {
+                toast.success('Lesson deleted successfully');
+                setChapters({ type: 'DELETE_LESSON', payload: id });
             })
             .catch(error => {
                 console.log(error);
@@ -158,7 +191,7 @@ const ManageChapter = ({ course }) => {
                                                                     <Link to={`/account/course/edit/${course.id}/lesson/edit/${lesson.id}`} className='text-primary me-2'>
                                                                         <BsPencilSquare />
                                                                     </Link>
-                                                                    <Link className='text-danger'>
+                                                                    <Link className='text-danger' onClick={() => deleteLesson(lesson.id)}>
                                                                         <FaTrashAlt />
                                                                     </Link>
                                                                 </div>
@@ -182,7 +215,7 @@ const ManageChapter = ({ course }) => {
 
             <UpdateChapterModal show={show} handleClose={handleClose} chapterData={chapterData} chapters={chapters} setChapters={setChapters} />
 
-            <AddLessonModal showLessonAddModal={showLessonAddModal} handleCloseLessonAddModal={handleCloseLessonAddModal} chapters={chapters} />
+            <AddLessonModal addLessonToChapter={addLessonToChapter} showLessonAddModal={showLessonAddModal} handleCloseLessonAddModal={handleCloseLessonAddModal} chapters={chapters} />
 
         </>
     )
