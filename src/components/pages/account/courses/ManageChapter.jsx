@@ -8,33 +8,38 @@ import UpdateChapterModal from './UpdateChapterModal';
 import AddLessonModal from './AddLessonModal';
 import { BsPencilSquare } from 'react-icons/bs';
 import { FaTrashAlt } from 'react-icons/fa';
+import LessonSortModal from './LessonSortModal';
 
 
 const ManageChapter = ({ course }) => {
     const [loading, setLoading] = useState(false);
     const { register, handleSubmit, formState: { errors }, reset, setError } = useForm();
+    const [chapterData, setChapterData] = useState(null);
+    const [lessons,setLessons] = useState([]);
 
     const [show, setShow] = useState(false);
-
-    const [showLessonAddModal, setShowLessonAddModal] = useState(false);
-
     const handleClose = () => setShow(false);
-    const handleCloseLessonAddModal = () => setShowLessonAddModal(false);
-
-    const [chapterData, setChapterData] = useState(null);
-
-    // const [chapters, setChapters] = useState([]);
-
-    const handleShowLessonAddModal = (chapter) => {
-
-        setShowLessonAddModal(true);
-    }
-
     const handleShow = (chapter) => {
-
         setChapterData(chapter);
         setShow(true);
     }
+
+    //Add lesson modal
+    const [showLessonAddModal, setShowLessonAddModal] = useState(false);
+    const handleCloseLessonAddModal = () => setShowLessonAddModal(false);
+    const handleShowLessonAddModal = (chapter) => {
+        setShowLessonAddModal(true);
+    }
+    //Sort lesson modal
+    const [showLessonSortModal, setShowLessonSortModal] = useState(false);
+    const handleCloseLessonSortModal = () => setShowLessonSortModal(false);
+    const handleShowLessonSortModal = (lessons) => {
+        setLessons(lessons);
+        setShowLessonSortModal(true);
+
+    }
+    
+
 
     const chapterReducer = (state, action) => {
         switch (action.type) {
@@ -96,9 +101,9 @@ const ManageChapter = ({ course }) => {
         setChapters({
             type: 'UPDATE_CHAPTER',
             payload: {
-                ...chapters.find(c => c.id === lesson.chapter_id),
+                ...chapters.find(c => Number(c.id) === Number(lesson.chapter_id)),
                 lessons: [
-                    ...(chapters.find(c => c.id === lesson.chapter_id)?.lessons || []),
+                    ...(chapters.find(c => Number(c.id) === Number(lesson.chapter_id))?.lessons || []),
                     lesson
                 ]
             }
@@ -170,6 +175,10 @@ const ManageChapter = ({ course }) => {
                                     <Accordion.Item eventKey={index}>
                                         <Accordion.Header>{chapter.title}</Accordion.Header>
                                         <Accordion.Body>
+                                            <div className='d-flex justify-content-between align-items-center mb-2'>
+                                                <h5>Lessons</h5>
+                                                <Link onClick={()=>handleShowLessonSortModal(chapter.lessons)} className='text-primary'>Reorder list</Link>
+                                            </div>
 
                                             {
                                                 chapter.lessons && chapter.lessons.map(lesson => {
@@ -216,6 +225,8 @@ const ManageChapter = ({ course }) => {
             <UpdateChapterModal show={show} handleClose={handleClose} chapterData={chapterData} chapters={chapters} setChapters={setChapters} />
 
             <AddLessonModal addLessonToChapter={addLessonToChapter} showLessonAddModal={showLessonAddModal} handleCloseLessonAddModal={handleCloseLessonAddModal} chapters={chapters} />
+
+            <LessonSortModal showLessonSortModal={showLessonSortModal} handleCloseLessonSortModal={handleCloseLessonSortModal} lessonData={lessons} setChapters={setChapters} />
 
         </>
     )
