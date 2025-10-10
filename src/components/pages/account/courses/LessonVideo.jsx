@@ -15,6 +15,8 @@ const LessonVideo = ({lesson,setLesson}) => {
     const [files, setFiles] = useState([]);
     const userInfo = localStorage.getItem('userInfo');
     const token = userInfo ? JSON.parse(userInfo).token : null;
+    console.log('Lesson video lesson ', lesson);
+
     return (
         <>
             <div className="card">

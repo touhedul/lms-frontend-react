@@ -9,13 +9,15 @@ import AddLessonModal from './AddLessonModal';
 import { BsPencilSquare } from 'react-icons/bs';
 import { FaTrashAlt } from 'react-icons/fa';
 import LessonSortModal from './LessonSortModal';
+import ChapterSortModal from './ChapterSortModal';
 
 
 const ManageChapter = ({ course }) => {
     const [loading, setLoading] = useState(false);
     const { register, handleSubmit, formState: { errors }, reset, setError } = useForm();
     const [chapterData, setChapterData] = useState(null);
-    const [lessons,setLessons] = useState([]);
+    const [chaptersData, setChaptersData] = useState([]);
+    const [lessons, setLessons] = useState([]);
 
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
@@ -36,9 +38,21 @@ const ManageChapter = ({ course }) => {
     const handleShowLessonSortModal = (lessons) => {
         setLessons(lessons);
         setShowLessonSortModal(true);
+        console.log('less',lessons);
 
     }
-    
+
+    //Sort chapter modal
+    const [showChapterSortModal, setShowChapterSortModal] = useState(false);
+    const handleCloseChapterSortModal = () => setShowChapterSortModal(false);
+    const handleShowChapterSortModal = (allChapters) => {
+        console.log('chapt',allChapters);
+        setChaptersData(allChapters);
+        console.log('chap',chaptersData);
+        setShowChapterSortModal(true);
+
+    }
+
 
 
     const chapterReducer = (state, action) => {
@@ -143,7 +157,10 @@ const ManageChapter = ({ course }) => {
             <div className="card">
                 <div className="card-header d-flex justify-content-between align-items-center">
                     <h5 className="card-title mb-0">Chapters</h5>
+                    <div>
                     <a className='btn btn-sm btn-primary' onClick={() => handleShowLessonAddModal(null)}>Add Lesson</a>
+                    <Link onClick={() => handleShowChapterSortModal(chapters)} className='btn btn-sm btn-warning ms-2'>Reorder list</Link>
+                    </div>
                 </div>
                 <div className="card-body">
                     <form onSubmit={handleSubmit(addChapter)}>
@@ -177,7 +194,7 @@ const ManageChapter = ({ course }) => {
                                         <Accordion.Body>
                                             <div className='d-flex justify-content-between align-items-center mb-2'>
                                                 <h5>Lessons</h5>
-                                                <Link onClick={()=>handleShowLessonSortModal(chapter.lessons)} className='text-primary'>Reorder list</Link>
+                                                <Link onClick={() => handleShowLessonSortModal(chapter.lessons)} className='text-primary'>Reorder list</Link>
                                             </div>
 
                                             {
@@ -227,6 +244,8 @@ const ManageChapter = ({ course }) => {
             <AddLessonModal addLessonToChapter={addLessonToChapter} showLessonAddModal={showLessonAddModal} handleCloseLessonAddModal={handleCloseLessonAddModal} chapters={chapters} />
 
             <LessonSortModal showLessonSortModal={showLessonSortModal} handleCloseLessonSortModal={handleCloseLessonSortModal} lessonData={lessons} setChapters={setChapters} />
+
+            <ChapterSortModal showChapterSortModal={showChapterSortModal} handleCloseChapterSortModal={handleCloseChapterSortModal} allChaptersData={chaptersData} setChapters={setChapters} />
 
         </>
     )

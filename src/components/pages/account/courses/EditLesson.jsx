@@ -39,6 +39,7 @@ const EditLesson = ({ placeholder }) => {
     const fetchLesson = () => {
         axiosInstance.get(`/lessons/${params.lessonId}`)
             .then(response => {
+                console.log('fetch lesson response',response.data);
                 setLesson(response.data);
                 setChecked(response.data.is_free_preview);
                 setContent(response.data.description);
@@ -82,8 +83,10 @@ const EditLesson = ({ placeholder }) => {
     };
 
     useEffect(() => {
+        console.log('edit lesson 0',lesson);
         fetchLesson();
         fetchCourse();
+        console.log('edit lesson 1',lesson);
     }, [])
     return (
         <Layout>
@@ -226,7 +229,10 @@ const EditLesson = ({ placeholder }) => {
                                         <br />
                                     </div>
                                     <div className='col-md-5'>
+                                        {
+                                            lesson &&
                                         <LessonVideo lesson={lesson} setLesson={setLesson} />
+                                        }
                                     </div>
                                 </div>
                             </div>
