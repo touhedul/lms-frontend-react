@@ -1,10 +1,22 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Layout from '../../common/Layout'
 import UserSidebar from '../../common/UserSidebar'
 import CourseEdit from '../../common/CourseEdit'
+import axiosInstance from '../../../api/axios'
 
 const MyCourses = () => {
+    const [courses,setCourses]=useState([]);
+    const getCourses = ()=>{
+        axiosInstance.get('courses/my')
+        .then(response => {
+            setCourses(response.data);
+        })
+    }
+
+    useEffect(()=>{
+        getCourses();
+    },[])
   return (
     <>
         <Layout>
@@ -22,9 +34,13 @@ const MyCourses = () => {
                         </div>
                         <div className='col-lg-9'>
                             <div className='row gy-4'>
-                                <CourseEdit/>                     
-                                <CourseEdit/>                     
-                                <CourseEdit/>                     
+                                {
+                                    courses && courses.map(course=>{
+                                        return(
+                                            <CourseEdit course={course}/>                  
+                                        );
+                                    })
+                                }
                             </div>
                         </div>
                     </div>

@@ -20,6 +20,7 @@ const CourseEdit = () => {
     const [languages, setLanguages] = useState([]);
     const params = useParams();
     const [course, setCourse] = useState({});
+    const [courseStatus,setCourseStatus] = useState(false);
 
     const getMetadata = () => {
         axiosInstance.get('/course-metadata')
@@ -47,6 +48,7 @@ const CourseEdit = () => {
                     cross_price: course.cross_price,
                 });
                 setCourse(course);
+                setCourseStatus(course.status);
             })
             .catch(error => {
                 console.log(error);
@@ -75,6 +77,14 @@ const CourseEdit = () => {
                 setLoading(false);
             })
     }
+
+    const publishUnpublishCourse = ()=>{
+        axiosInstance.post(`/courses/publish-unpublish/${course.id}`)
+        .then(response=>{
+            toast.success('Success');
+            setCourseStatus(response.data.status);
+        })
+    }
     return (
         <Layout>
 
@@ -90,6 +100,14 @@ const CourseEdit = () => {
                         <div className='col-md-12 mt-5 mb-3'>
                             <div className='d-flex justify-content-between'>
                                 <h2 className='h4 mb-0 pb-0'>Edit Course</h2>
+                                {
+                                    courseStatus == true && 
+                                    <button onClick={publishUnpublishCourse} className='btn btn-warning'>Unpublish</button>
+                                }
+                                {
+                                    courseStatus == false && 
+                                    <button onClick={publishUnpublishCourse} className='btn btn-primary'>Publish</button>
+                                }
                             </div>
                         </div>
                         <div className='col-lg-3 account-sidebar'>
