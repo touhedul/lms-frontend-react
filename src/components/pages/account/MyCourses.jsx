@@ -4,6 +4,7 @@ import Layout from '../../common/Layout'
 import UserSidebar from '../../common/UserSidebar'
 import CourseEdit from '../../common/CourseEdit'
 import axiosInstance from '../../../api/axios'
+import toast from 'react-hot-toast'
 
 const MyCourses = () => {
     const [courses,setCourses]=useState([]);
@@ -11,6 +12,17 @@ const MyCourses = () => {
         axiosInstance.get('courses/my')
         .then(response => {
             setCourses(response.data);
+        })
+    }
+
+    const deleteCourse = (id) => {
+        if(!confirm('Are you sure?')){
+            return;
+        }
+        axiosInstance.delete(`/courses/${id}`)
+        .then(response =>{
+            toast.success('Delete successful.');
+            setCourses(courses.filter(course => course.id !== id))
         })
     }
 
@@ -37,7 +49,7 @@ const MyCourses = () => {
                                 {
                                     courses && courses.map(course=>{
                                         return(
-                                            <CourseEdit course={course}/>                  
+                                            <CourseEdit course={course} deleteCourse={deleteCourse}/>                  
                                         );
                                     })
                                 }

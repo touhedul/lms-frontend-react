@@ -1,12 +1,23 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import axiosInstance from '../../api/axios'
+import toast from 'react-hot-toast'
 
-const CourseEdit = ({course}) => {
+const CourseEdit = ({course,deleteCourse}) => {
+
+    
   return (
     <div className="col-md-4">
         <div className='card border-0'>
             <div className='card-img-top'>
-                <img src={`https://placehold.co/600x350?text=Web+Development`} alt="" className='img-fluid' />
+                {
+                    course.image && 
+                    <img src={course.image} alt="" className='img-fluid' />
+                }
+                {
+                    !course.image &&
+                    <img src={`https://placehold.co/600x350?text=Web+Development`} alt="" className='img-fluid' />
+                }
             </div>
             <div className='card-body'>
                 <div className="card-title ">
@@ -52,6 +63,7 @@ const CourseEdit = ({course}) => {
                 <div className="d-flex py-2 justify-content-between align-items-center">
                     <div className="add-to-cart">
                         <Link  to={`/account/course/edit/${course.id}`} className="btn btn-primary">Edit</Link>
+                        <button onClick={()=>deleteCourse(course.id)} className="btn btn-danger ms-2">Delete</button>
                     </div>
                 </div>
             </div>
