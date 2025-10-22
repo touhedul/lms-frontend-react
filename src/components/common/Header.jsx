@@ -4,6 +4,7 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
@@ -27,7 +28,7 @@ const Header = () => {
                             </div>
                         </Form> */}
                     </Nav>
-                    <a href='/account/my-learning' className="btn btn-primary">My Account</a>
+                    <Link to={`/account/dashboard`} className="btn btn-primary">My Account</Link>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>

@@ -1,7 +1,22 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Course from './Course'
+import axiosInstance from '../../api/axios';
 
 const FeaturedCourses = () => {
+    const [featuredCourses,setFeaturedCourses] = useState([]);
+    const getFeaturedCourses = ()=>{
+        axiosInstance.get('/featured-courses')
+        .then((res)=>{
+            console.log(res.data);
+            setFeaturedCourses(res.data);
+        })
+        .catch((err)=>{
+            console.log(err);
+        })
+    }
+    useState(()=>{
+        getFeaturedCourses();
+    },[]);
     return (
         <section className='section-3 my-5'>    
             <div className="container">
@@ -10,56 +25,20 @@ const FeaturedCourses = () => {
                     <p>Discover courses designed to help you excel in your professional and personal growth.</p>
                 </div>
                 <div className="row gy-4">
-                    <Course 
-                        title='The complete 2025 Web Development Bootcamp'
-                        level='Advance'
-                        enrolled='10'
-                        customClasses="col-lg-3 col-md-6"
-                    />
-                    <Course 
-                        title='The complete 2025 Web Development Bootcamp'
-                        level='Advance'
-                        enrolled='10'
-                        customClasses="col-lg-3 col-md-6"
-                    />   
-                    <Course 
-                        title='The complete 2025 Web Development Bootcamp'
-                        level='Advance'
-                        enrolled='10'
-                        customClasses="col-lg-3 col-md-6"
-                    />   
-                    <Course 
-                        title='The complete 2025 Web Development Bootcamp'
-                        level='Advance'
-                        enrolled='10'
-                        customClasses="col-lg-3 col-md-6"
-                    />   
-                    <Course 
-                        title='The complete 2025 Web Development Bootcamp'
-                        level='Advance'
-                        enrolled='10'
-                        customClasses="col-lg-3 col-md-6"
-                    />   
-                    <Course 
-                        title='The complete 2025 Web Development Bootcamp'
-                        level='Advance'
-                        enrolled='10'
-                        customClasses="col-lg-3 col-md-6"
-                    />   
-
-                    <Course 
-                        title='The complete 2025 Web Development Bootcamp'
-                        level='Advance'
-                        enrolled='10'
-                        customClasses="col-lg-3 col-md-6"
-                    />   
-
-                    <Course 
-                        title='The complete 2025 Web Development Bootcamp'
-                        level='Advance'
-                        enrolled='10'
-                        customClasses="col-lg-3 col-md-6"
-                    />   s            
+                    {
+                        featuredCourses.map(course=>{
+                            return(
+                                <Course 
+                                    key={course.id}
+                                    title={course.title}
+                                    level={course.level}
+                                    enrolled={course.enrolled}
+                                    course={course}
+                                    customClasses="col-lg-3 col-md-6"
+                                />
+                            )
+                        })
+                    }
                     
                 </div>
             </div>

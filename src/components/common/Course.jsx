@@ -1,11 +1,16 @@
 import React from 'react'
 
-const Course = ({title,level,enrolled,customClasses}) => {
+const Course = ({title,level,enrolled,customClasses,course}) => {
   return (
     <div className={customClasses}>
         <div className='card border-0'>
             <div className='card-img-top'>
-                <img src={`https://placehold.co/600x350?text=${title}`} alt="" className='img-fluid' />
+                {
+                    course.image && <img src={course.image} alt="" className='img-fluid' />
+                }
+                {
+                    !course.image && <img src={`https://placehold.co/600x350?text=${title}`} alt="" className='img-fluid' />
+                }
             </div>
             <div className='card-body'>
                 <div className="card-title">
@@ -46,7 +51,7 @@ const Course = ({title,level,enrolled,customClasses}) => {
             </div>
             <div className="card-footer bg-white">
                 <div className="d-flex py-2 justify-content-between align-items-center">
-                    <div className="price">$50</div>
+                    <div className="price">${course.price}</div>
                     <div className="add-to-cart">
                         <a href="/detail" className="btn btn-primary" >Read More</a>
                     </div>
