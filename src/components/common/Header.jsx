@@ -18,7 +18,7 @@ const Header = () => {
                         className="me-auto my-2 my-lg-0"
                         navbarScroll
                     >
-                        <Nav.Link href="/courses" className=''>All Courses</Nav.Link>
+                        <Link to={`/courses`} className=''>All Courses</Link>
                         {/* <Form className="d-flex me-3 ms-lg-3 ms-md-3">
                             <div className="custom-search-box">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
