@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react'
 import Course from '../common/Course'
 import Layout from '../common/Layout'
 import axiosInstance from '../../api/axios'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import NotFound from '../common/NotFound'
+import Loading from '../common/Loading'
 
 const Courses = () => {
     const [rating, setRating] = useState(4.0)
@@ -13,6 +15,9 @@ const Courses = () => {
     const [levels, setLevels] = useState([]);
     const [languages, setLanguages] = useState([]);
     const [courses, setCourses] = useState([]);
+    const [keyword,setKeyword] = useState('');
+    const [sort,setSort] = useState('desc');
+    const [loading,setLoading] = useState(false);
 
     const [categoryChecked, setCategoryChecked] = useState(() => {
         const categoryIds = searchParams.get('category_ids');
@@ -82,6 +87,7 @@ const Courses = () => {
     }
 
     const fetchCourses = () => {
+        
         let search = [];
         let params = "";
 
@@ -96,12 +102,21 @@ const Courses = () => {
             search.push(['level_ids', checkedLevels]);
         }
 
+        if(keyword.length > 0){
+            search.push(['keyword', keyword]);
+        }
+
+        search.push(['sort', sort]);   
+
         if (search.length > 0) {
             params = new URLSearchParams(search);
             setSearchParams(params);
+        }else{
+            setSearchParams([]);
         }
         const url = '/all-courses?' + params;
         console.log('Fetching courses from ', url);
+        setLoading(true);
         axiosInstance.get(url)
             .then((res) => {
                 console.log('Courses fetched: ', res.data);
@@ -110,6 +125,18 @@ const Courses = () => {
             .catch((err) => {
                 console.log(err);
             })
+            .finally(()=>{
+                setLoading(false);
+            })
+    }
+
+    const clearFilters = () => {
+        setCategoryChecked([]);
+        setLanguageChecked([]);
+        setCheckedLevels([]);
+        setKeyword('');
+
+        document.querySelectorAll('.form-check-input').forEach(element => element.checked = false);
     }
 
     useEffect(() => {
@@ -117,7 +144,7 @@ const Courses = () => {
         getLevels();
         getLanguages();
         fetchCourses();
-    }, [categoryChecked, checkedLevels, languageChecked]);
+    }, [categoryChecked, checkedLevels, languageChecked, keyword,sort]);
 
     return (
         <Layout>
@@ -132,7 +159,7 @@ const Courses = () => {
                     <div className='col-lg-3'>
                         <div className='sidebar mb-5 card border-0'>
                             <div className='card-body shadow'>
-                                <input type="text" className='form-control' placeholder='Search by keyword' />
+                                <input type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} className='form-control' placeholder='Search by keyword' />
                                 <div className='pt-3'>
                                     <h3 className='h5 mb-2'>Category</h3>
                                     <ul>
@@ -206,7 +233,7 @@ const Courses = () => {
                                        
                                     </ul>
                                 </div>
-                                <a href="" className='clear-filter'>Clear All Filters</a>
+                                <Link onClick={clearFilters} className='clear-filter'>Clear All Filters</Link>
                             </div>
                         </div>
                     </div>
@@ -217,16 +244,19 @@ const Courses = () => {
                                     {/* 10 courses found */}
                                 </div>
                                 <div>
-                                    <select name="" id="" className='form-select'>
-                                        <option value="0">Newset First</option>
-                                        <option value="1">Oldest First</option>
+                                    <select 
+                                    value={sort}
+                                    onChange={(e) => setSort(e.target.value)}
+                                    name="" id="" className='form-select'>
+                                        <option value="desc">Newset First</option>
+                                        <option value="asc">Oldest First</option>
                                     </select>
                                 </div>
                             </div>
                             <div className="row gy-4">
 
                                 {
-                                    courses.map(course => {
+                                    loading==false && courses.map(course => {
                                         return (
                                             <Course
                                                 key={course.id}
@@ -238,6 +268,15 @@ const Courses = () => {
                                             />
                                         )
                                     })
+                                }
+
+                                {
+                                    loading==false && courses.length == 0 && 
+                                    <NotFound></NotFound>
+                                }
+                                {
+                                    loading && 
+                                    <Loading></Loading>
                                 }
                             </div>
                         </section>
