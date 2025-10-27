@@ -6,12 +6,14 @@ import Layout from '../common/Layout'
 import { useParams } from 'react-router-dom';
 import axiosInstance from '../../api/axios';
 import Loading from '../common/Loading';
+import toast from 'react-hot-toast';
 
 const Detail = () => {
     const [rating, setRating] = useState(4.0);
     const params = useParams();
     const [course, setCourse] = useState({});
     const [loading, setLoading] = useState(false);
+    const [enrollLoading, setEnrollLoading] = useState(false);
 
     const fetchCourse = () => {
         setLoading(true);
@@ -25,6 +27,26 @@ const Detail = () => {
             .finally(() => {
                 setLoading(false);
             })
+    }
+
+    const enroll = () =>{
+        setEnrollLoading(true);
+        axiosInstance.post(`/enroll/${params.id}`)
+        .then(response => {
+            console.log(response.status);
+            toast.success('Enroll Successfully');
+        })
+        .catch(error => {
+            if(error.status == 400){
+                toast.error('You are already enrolled');
+            }
+            if(error.status == 401){
+                toast.error('Please Login First');
+            }
+        })
+        .finally(() => {
+            setEnrollLoading(false);
+        })  
     }
 
     useEffect(() => {
@@ -190,8 +212,11 @@ const Detail = () => {
                                         <div className="text-muted text-decoration-line-through">${course.price}</div>
                                         {/* Buttons */}
                                         <div className="mt-4">
-                                            <button className="btn btn-primary w-100">
-                                                <i className="bi bi-ticket"></i> Buy Now
+                                            <button onClick={enroll} className="btn btn-primary w-100">
+                                                <i className="bi bi-ticket"></i> 
+                                                {
+                                                    enrollLoading ? 'Enrolling...' : 'Enroll Now'
+                                                }
                                             </button>
                                         </div>
                                     </Card.Body>
