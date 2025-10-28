@@ -34,31 +34,47 @@ function App() {
             <RequireAuth>
               <Dashboard />
             </RequireAuth>
-            } />
+          } />
           <Route path='/account/course/create' element={
             <RequireAuth>
               <CourseCreate />
             </RequireAuth>
-            } />
+          } />
           <Route path='/account/course/edit/:id' element={
             <RequireAuth>
               <CourseEdit />
             </RequireAuth>
-            } />
+          } />
           <Route path='/account/course/edit/:courseId/lesson/edit/:lessonId' element={
             <RequireAuth>
               <EditLesson />
             </RequireAuth>
-            } />
+          } />
 
 
-          <Route path='/account/change-password' element={<ChangePassword />} />
-          <Route path='/account/enrolled-courses' element={<MyLearning />} />
-          <Route path='/account/my-courses' element={<MyCourses />} />
-          <Route path='/account/watch-course' element={<WatchCourse />} />
+          <Route path='/account/change-password' element={
+            <RequireAuth>
+              <ChangePassword />
+            </RequireAuth>
+          } />
+          <Route path='/account/enrolled-courses' element={
+            <RequireAuth>
+              <MyLearning />
+            </RequireAuth>
+          } />
+          <Route path='/account/my-courses' element={
+            <RequireAuth>
+              <MyCourses />
+            </RequireAuth>
+          } />
+          <Route path='/account/watch-course/:id' element={
+            <RequireAuth>
+              <WatchCourse />
+            </RequireAuth>
+          } />
         </Routes>
       </BrowserRouter>
-      <Toaster/>
+      <Toaster />
     </>
   )
 }

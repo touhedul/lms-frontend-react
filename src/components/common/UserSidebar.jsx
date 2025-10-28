@@ -24,7 +24,7 @@ const UserSidebar = () => {
                 </li>
                
                 <li  className='d-flex align-items-center'>
-                    <Link to="/account/my-learning"><BsMortarboardFill  size={16} className='me-2' /> My Learning</Link>
+                    <Link to="/account/enrolled-courses"><BsMortarboardFill  size={16} className='me-2' /> My Learning</Link>
                 </li>
                 <li  className='d-flex align-items-center'>
                     <Link to="/account/my-courses"><FaDesktop  size={16} className='me-2'/> My Courses</Link>

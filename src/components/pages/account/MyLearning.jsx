@@ -1,8 +1,24 @@
 import React from 'react'
 import Layout from '../../common/Layout'
 import CourseEnrolled from '../../common/CourseEnrolled'
+import UserSidebar from '../../common/UserSidebar'
+import { useState, useEffect } from 'react'
+import axiosInstance from '../../../api/axios'
 
 const MyLearning = () => {
+    const [enrollments, setEnrollments] = useState([]);
+    const fetchEnrollments = () => {
+        axiosInstance.get('/enrollments')
+            .then(response => {
+                setEnrollments(response.data);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+    useEffect(() => {
+        fetchEnrollments();
+    }, []);
   return (
     <>
         <Layout>
@@ -18,12 +34,14 @@ const MyLearning = () => {
                         </div>
                         <div className='col-lg-9'>
                             <div className='row gy-4'>
-                                <CourseEnrolled/>
-                                <CourseEnrolled/>
-                                <CourseEnrolled/>
-                                <CourseEnrolled/>
-                                <CourseEnrolled/>                                
-                                <CourseEnrolled/>                                
+                                {
+                                    enrollments.map(enrollment =>{
+                                        return(
+
+                                            <CourseEnrolled enrollment={enrollment} key={enrollment.id}/>                            
+                                        );
+                                    })
+                                }
                             </div>
                         </div>
                     </div>
