@@ -4,8 +4,9 @@ import { MdSlowMotionVideo } from "react-icons/md";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import Layout from '../../common/Layout';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axiosInstance from '../../../api/axios';
+import ReactPlayer from 'react-player'
 
 
 const WatchCourse = () => {
@@ -23,6 +24,17 @@ const WatchCourse = () => {
             })
     }
 
+    const showLesson = (lesson) => {
+        setActiveLesson(lesson);
+        axiosInstance.post('/save-activity', { course_id: params.id, chapter_id: lesson.chapter_id, lesson_id: lesson.id }
+        ).then(response => {
+            console.log(response.data);
+        }).catch(error => {
+            console.log(error);
+        }
+        )
+    }
+
     useEffect(() => {
         fetchCourse();
     }, [])
@@ -34,11 +46,10 @@ const WatchCourse = () => {
                         <div className='row'>
                             <div className='col-md-8'>
                                 <div className='video'>
-                                    <video width="100%" height="500" controls>
-                                        <source src="movie.mp4" type="video/mp4" />
-                                        <source src="movie.ogg" type="video/ogg" />
-                                        Your browser does not support the video tag.
-                                    </video>
+                                    {
+                                        activeLesson &&
+                                        <ReactPlayer width='100%' height='100%' src={activeLesson.video} controls />
+                                    }
                                 </div>
                                 <div className='meta-content'>
                                     <div className='d-flex justify-content-between align-items-center border-bottom pb-2 mb-3 pt-1'>
@@ -53,7 +64,10 @@ const WatchCourse = () => {
                                         </div>
                                     </div>
                                     <div>
-                                        <p>In this chapter we will learn about html basics</p>
+                                        {
+                                            activeLesson && activeLesson.description &&
+                                            <p><div dangerouslySetInnerHTML={{ __html: activeLesson.description }}></div></p>
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -82,9 +96,9 @@ const WatchCourse = () => {
                                                                         chapter.lessons && chapter.lessons.map(lesson => {
                                                                             return (
                                                                                 <li className='pb-2'>
-                                                                                    <a href="">
+                                                                                    <Link onClick={() => showLesson(lesson)}>
                                                                                         <MdSlowMotionVideo size={20} /> {lesson.title}
-                                                                                    </a>
+                                                                                    </Link>
                                                                                 </li>
                                                                             )
                                                                         })
