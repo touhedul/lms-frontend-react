@@ -13,11 +13,13 @@ const WatchCourse = () => {
     const params = useParams();
     const [course, setCourse] = useState({});
     const [activeLesson, setActiveLesson] = useState({});
+    const [completedLessons, setCompletedLessons] = useState([]);
     const fetchCourse = () => {
         axiosInstance.get(`/watch-course/${params.id}`)
             .then(response => {
                 setCourse(response.data.course);
                 setActiveLesson(response.data.activeLesson);
+                setCompletedLessons(response.data.completedLessonId);
             })
             .catch(error => {
                 console.log(error);
@@ -28,6 +30,17 @@ const WatchCourse = () => {
         setActiveLesson(lesson);
         axiosInstance.post('/save-activity', { course_id: params.id, chapter_id: lesson.chapter_id, lesson_id: lesson.id }
         ).then(response => {
+            console.log(response.data);
+        }).catch(error => {
+            console.log(error);
+        }
+        )
+    }
+
+    const markComplete = (lesson) => {
+        axiosInstance.post('/mark-complete', { course_id: params.id, chapter_id: lesson.chapter_id, lesson_id: lesson.id }
+        ).then(response => {
+            setCompletedLessons([...completedLessons, lesson.id]);
             console.log(response.data);
         }).catch(error => {
             console.log(error);
@@ -59,8 +72,15 @@ const WatchCourse = () => {
                                             }
                                         </h3>
                                         <div>
-                                            <a href="" className='btn btn-primary px-3'>
-                                                Mark as complete <IoMdCheckmarkCircleOutline size={20} /> </a>
+                                            {
+                                                completedLessons.includes(activeLesson.id) &&
+                                                <span className='badge bg-success'>Completed</span>
+                                            }
+                                            {
+                                                !completedLessons.includes(activeLesson.id) &&
+                                                <Link onClick={() => markComplete(activeLesson)} className='btn btn-primary px-3'>
+                                                    Mark as complete <IoMdCheckmarkCircleOutline size={20} /> </Link>
+                                            }
                                         </div>
                                     </div>
                                     <div>
