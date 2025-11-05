@@ -14,12 +14,14 @@ const WatchCourse = () => {
     const [course, setCourse] = useState({});
     const [activeLesson, setActiveLesson] = useState({});
     const [completedLessons, setCompletedLessons] = useState([]);
+    const [progress, setProgress] = useState(0);
     const fetchCourse = () => {
         axiosInstance.get(`/watch-course/${params.id}`)
             .then(response => {
                 setCourse(response.data.course);
                 setActiveLesson(response.data.activeLesson);
                 setCompletedLessons(response.data.completedLessonId);
+                setProgress(response.data.progress);
             })
             .catch(error => {
                 console.log(error);
@@ -41,6 +43,7 @@ const WatchCourse = () => {
         axiosInstance.post('/mark-complete', { course_id: params.id, chapter_id: lesson.chapter_id, lesson_id: lesson.id }
         ).then(response => {
             setCompletedLessons([...completedLessons, lesson.id]);
+            setProgress(response.data.progress);
             console.log(response.data);
         }).catch(error => {
             console.log(error);
@@ -73,11 +76,11 @@ const WatchCourse = () => {
                                         </h3>
                                         <div>
                                             {
-                                                completedLessons.includes(activeLesson.id) &&
+                                                completedLessons && completedLessons.includes(activeLesson.id) &&
                                                 <span className='badge bg-success'>Completed</span>
                                             }
                                             {
-                                                !completedLessons.includes(activeLesson.id) &&
+                                                completedLessons && !completedLessons.includes(activeLesson.id) &&
                                                 <Link onClick={() => markComplete(activeLesson)} className='btn btn-primary px-3'>
                                                     Mark as complete <IoMdCheckmarkCircleOutline size={20} /> </Link>
                                             }
@@ -98,9 +101,9 @@ const WatchCourse = () => {
                                             <strong>{course?.title}</strong>
                                         </div>
                                         <div className='py-2'>
-                                            <ProgressBar now={0} />
+                                            <ProgressBar now={progress} />
                                             <div className='pt-2'>
-                                                0% complete
+                                                {progress}% complete
                                             </div>
                                         </div>
                                         <Accordion defaultActiveKey="0" flush>
@@ -116,7 +119,9 @@ const WatchCourse = () => {
                                                                         chapter.lessons && chapter.lessons.map(lesson => {
                                                                             return (
                                                                                 <li className='pb-2'>
-                                                                                    <Link onClick={() => showLesson(lesson)}>
+                                                                                    <Link 
+                                                                                    className={`${completedLessons && completedLessons.includes(lesson.id) ? 'text-success' : ''}`}
+                                                                                    onClick={() => showLesson(lesson)}>
                                                                                         <MdSlowMotionVideo size={20} /> {lesson.title}
                                                                                     </Link>
                                                                                 </li>
